@@ -178,7 +178,7 @@ struct ContentView: View {
                                 HStack(){
                                     Rectangle()
                                         .fill(.clear)
-                                        .frame(width: (bouns.width-300.0) * countDonwTimeProgress,height: 30)
+                                        .frame(width: (bouns.width-340.0) * countDonwTimeProgress,height: 30)
                                     //星をタップしたらタイマーを止める
                                     Button(action:{
                                         isCountDown.toggle()
@@ -188,7 +188,7 @@ struct ContentView: View {
                                         Image("pointer")
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(width:30,height:30)
+                                            .frame(width:40,height:40)
                                     }
                                     Rectangle()
                                         .frame(width: (bouns.width-300.0) * (1 - countDonwTimeProgress),height: 30)
