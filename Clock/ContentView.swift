@@ -23,7 +23,7 @@ struct ContentView: View {
     @State var countDonwTimeProgress = 0.0
     @State var timeLeft = 0
     
-    private let dateFormatter = DateFormatter()
+    private let dateFormatter1 = DateFormatter()
     private let dateFormatter2 = DateFormatter()
     private let dateFormatter4 = DateFormatter()
     private let dateFormatter5 = DateFormatter()
@@ -35,8 +35,8 @@ struct ContentView: View {
 
     init() {
         //dateFormatter.dateFormat = "YYYY/MM/dd(E) \nHH:mm:ss"
-        dateFormatter.dateFormat = "HH:mm"
-        dateFormatter.locale = Locale(identifier: "ja_jp")
+        dateFormatter1.dateFormat = "HH:mm"
+        dateFormatter1.locale = Locale(identifier: "ja_jp")
         
         dateFormatter2.dateFormat = "YYYY-MM-dd(E)"
         dateFormatter2.locale = Locale(identifier: "ja_jp")
@@ -72,7 +72,7 @@ struct ContentView: View {
                         .frame(height: bouns.height * 0.1)
                     HStack(alignment: .bottom) {
                         
-                        Text(dateText.isEmpty ? "\(dateFormatter.string(from: nowDate))" : dateText)
+                        Text(dateText.isEmpty ? "\(dateFormatter1.string(from: nowDate))" : dateText)
                             .font(Font(UIFont.monospacedDigitSystemFont(ofSize: 120, weight: .bold)))
                             .foregroundColor(.white)
                             .padding(10.0)
