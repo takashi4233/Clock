@@ -22,6 +22,8 @@ struct ContentView: View {
     @State var count = 0
     @State var countDonwTimeProgress = 0.0
     @State var timeLeft = 0
+    @State var bgColor = Color(.black)
+    @State var bgColorFlg = true
     
     private let dateFormatter1 = DateFormatter()
     private let dateFormatter2 = DateFormatter()
@@ -33,6 +35,14 @@ struct ContentView: View {
     //音楽ファイル再生
     let musicplayer = SoundPlayer()
 
+    func changeBgColor(b:Bool) {
+        if b {
+            bgColor = Color(.black)
+        } else {
+            bgColor = Color(.systemTeal)
+        }
+    }
+    
     init() {
         //dateFormatter.dateFormat = "YYYY/MM/dd(E) \nHH:mm:ss"
         dateFormatter1.dateFormat = "HH:mm"
@@ -57,7 +67,7 @@ struct ContentView: View {
         let bouns = UIScreen.main.bounds
         
         ZStack(){
-            Color(.black)
+            bgColor
                 .edgesIgnoringSafeArea(.all)
             if progressValue != -1 {
                 VStack {
@@ -245,7 +255,7 @@ struct ContentView: View {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                 
                 self.nowDate = Date()
-                dateText = "\(dateFormatter.string(from: nowDate))"
+                dateText = "\(dateFormatter1.string(from: nowDate))"
 
                 curHour = dateFormatter4.string(from: nowDate)
                 nextHour = String(format: "%02d", (Int(curHour) ?? 0)+1)
@@ -266,14 +276,32 @@ struct ContentView: View {
                     isSignal.toggle()
                 }
                 
+                /* マナーモード時の対応 */
+                if mm == 0.0 && dss < 10 {
+                    bgColorFlg.toggle()
+                    changeBgColor(b: bgColorFlg)
+                }
+                
                 /* タイマー機能 */
                 if isCountDown {
                     count += 1
-                    timeLeft = countDown - count
-                    countDonwTimeProgress = Double(count) / Double(countDown)
+                    /* タイマー時間内なら */
+                    if (count < countDown) {
+                        timeLeft = countDown - count
+                        countDonwTimeProgress = Double(count) / Double(countDown)
+                    }
+                    /* 設定時間になった際に音を鳴らす */
                     if count  == countDown {
-                        count = 0
                         musicplayer.musicPlayer(musicFile: "timer")
+                    }
+                    /* カウントダウンが終わっても10秒間画面を点滅させる */
+                    if countDown <  count && count < countDown + 9 {
+                        bgColorFlg.toggle()
+                        changeBgColor(b: bgColorFlg)
+                    }
+                    /* 10秒後にはとめる */
+                    if count == countDown + 10 {
+                        count = 0
                         isCountDown.toggle()
                     }
                 }
