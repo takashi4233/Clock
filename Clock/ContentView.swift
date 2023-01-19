@@ -24,6 +24,9 @@ struct ContentView: View {
     @State var timeLeft = 0
     @State var bgColor = Color(.black)
     @State var bgColorFlg = true
+
+    // ミュート設定されているか
+    @State var isMute = false
     
     private let dateFormatter1 = DateFormatter()
     private let dateFormatter2 = DateFormatter()
@@ -35,6 +38,7 @@ struct ContentView: View {
     //音楽ファイル再生
     let musicplayer = SoundPlayer()
 
+    // 時報がなる時間になった際に、背景色を変える
     func changeBgColor(b:Bool) {
         if b {
             bgColor = Color(.black)
@@ -42,6 +46,16 @@ struct ContentView: View {
             bgColor = Color(.systemTeal)
         }
     }
+    
+    //ミュートしている場合に、背景色を変える
+    func changeBgColorMute(b:Bool){
+        if b {
+            bgColor = Color(.systemMint)
+        } else {
+            bgColor = Color(.black)
+        }
+    }
+        
     
     init() {
         //dateFormatter.dateFormat = "YYYY/MM/dd(E) \nHH:mm:ss"
@@ -72,11 +86,33 @@ struct ContentView: View {
             if progressValue != -1 {
                 VStack {
                     HStack{
+                        Spacer()
                         Text(dateText2.isEmpty ? "\(dateFormatter2.string(from: nowDate))" : dateText2)
                             .font(.system(size: 30, weight: .bold, design: .rounded))
                             .padding(.top, 30.0)
                             .foregroundColor(.white)
                             .background(.clear)
+                        Spacer()
+                        /** ミュートボタン **/
+                        Button(action: {
+                            isMute.toggle()
+                            musicplayer.stopAllMusic()
+                            changeBgColorMute(b: isMute)
+                        }){
+                            if isMute {
+                                Image("mute")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width:20,height:20)
+                                    .padding()
+                            } else {
+                               Image("bell")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width:20,height:20)
+                                    .padding()
+                            }
+                        }
                     }
                     Spacer()
                         .frame(height: bouns.height * 0.1)
@@ -95,14 +131,12 @@ struct ContentView: View {
                     Spacer()
                         .frame(height: bouns.height * 0.2)
                     ZStack(){
-                        
                         HStack {
                             Text(curHour)
                                 .font(.system(size: 40, weight: .bold, design: .rounded))
                                 .padding(.leading, -60.0)
                                 .foregroundColor(.white)
                                 .background(.clear)
-                            
                             
                             Rectangle()
                                 .fill(.orange)
@@ -272,7 +306,9 @@ struct ContentView: View {
                     isSignal.toggle()
                 }
                 if isSignal{
-                    musicplayer.musicPlayer(musicFile: "signal")
+                    if !isMute {
+                        musicplayer.musicPlayer(musicFile: "signal")
+                    }
                     isSignal.toggle()
                 }
                 
@@ -292,7 +328,9 @@ struct ContentView: View {
                     }
                     /* 設定時間になった際に音を鳴らす */
                     if count  == countDown {
-                        musicplayer.musicPlayer(musicFile: "timer")
+                        if  !isMute {
+                            musicplayer.musicPlayer(musicFile: "timer")
+                        }
                     }
                     /* カウントダウンが終わっても10秒間画面を点滅させる */
                     if countDown <  count && count < countDown + 9 {
@@ -303,6 +341,7 @@ struct ContentView: View {
                     if count == countDown + 10 {
                         count = 0
                         isCountDown.toggle()
+                        changeBgColorMute(b: isMute)
                     }
                 }
             }
